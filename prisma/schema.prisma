@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  PENDING
+  COMPLETED
+  IN_PROGRESS
+}
+
+model User {
+  id              String    @id @default(cuid())
+  username        String?
+  name            String?
+  about           String?
+  status          String?
+  activeProjectId String?
+  role            String?
+  activeProject   Project?  @relation("activeProject", fields: [activeProjectId], references: [id])
+  contact         String?
+  email           String?   @unique
+  emailVerified   DateTime?
+  image           String?
+  password        String?
+  accounts        Account[]
+  clients         Client[]
+  Task            Task[]
+  Project         Project[]
+  assignedProject Project[] @relation("assignedUsers")
+  createdAt       DateTime  @default(now()) // createdAt field for User activeProject   Project?    @relation("ActiveProject", fields: [activeProjectId], references: [id])
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+  createdAt DateTime @default(now()) // createdAt field for Client
+  Project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String?
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Task {
+  id         String      @id @default(cuid())
+  task       String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade) // User who owns this task
+  userId     String // User ID to establish the relationship
+  clientName String // Name of the client associated with this task
+  status     TaskStatus? @default(PENDING) // Status of the task: Pending, Completed, In Progress, Overdue
+  Client     Client?     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId   String?
+  createdAt  DateTime    @default(now()) // createdAt field for Task
+  Project    Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String?
+}
+
+model Project {
+  id            String    @id @default(cuid())
+  name          String?
+  description   String?
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  assignedUsers User[]    @relation("assignedUsers")
+  status        String?
+  startDate     DateTime?
+  endDate       DateTime?
+  githubLink    String?
+  tasks         Task[] // Linked projects with tasks
+  clients       Client[] // Linked projects with clients
+  createdAt     DateTime  @default(now())
+  activeProject User[]    @relation("activeProject")
+}
