@@ -10,7 +10,7 @@ import Link from "next/link";
 import React from "react";
 
 const UsersPage = async () => {
-  const users = await db.user.findMany({}).catch((err) => console.log(err));
+  const users = await db.user.findMany();
 
   return (
     <div className="mt-6">
