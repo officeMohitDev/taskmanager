@@ -62,7 +62,7 @@ export default function TaskTable({ data }: { data: Task[] }) {
                 {isEditing && editDetails.id === data.id ? (
                   <form
                     onSubmit={() => {
-                      updateTask(editDetails.id, editTask);
+                      updateTask(editDetails.id, editTask, data.userId);
                       setIsEditing(false);
                       setEditDetails("");
                       setEditTask("");
@@ -90,7 +90,9 @@ export default function TaskTable({ data }: { data: Task[] }) {
               <TableCell>{data?.Project?.name}</TableCell>
               <TableCell
                 className="cursor-pointer"
-                onClick={async () => await changeStatusOfTask(data?.id)}
+                onClick={async () =>
+                  await changeStatusOfTask(data?.id, data.userId)
+                }
               >
                 <Chip
                   className="capitalize"
@@ -123,7 +125,9 @@ export default function TaskTable({ data }: { data: Task[] }) {
                     </DropdownItem>
                     <DropdownItem
                       color="danger"
-                      onClick={async () => await deleteTask(data.id)}
+                      onClick={async () =>
+                        await deleteTask(data.id, data.userId)
+                      }
                     >
                       Delete
                     </DropdownItem>

@@ -5,6 +5,8 @@ import React from "react";
 import PersonalDetailsFrom from "../(component)/PersonalDetailsFrom";
 import { Project, User } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 const ProfileEditPage = async () => {
   const currentUser = await getCurrentUser();
   const userData: User | null = await db.user.findUnique({
