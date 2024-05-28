@@ -18,7 +18,7 @@ const CopyFormPage = async ({
   const [clientTask, clientDetails] = await Promise.all([
     db.task.findMany({
       where: {
-        clientId: params.clientID,
+        clientId: params.clientID as string,
         status: "COMPLETED",
         createdAt: {
           gte: startOfDay,

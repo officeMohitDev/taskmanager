@@ -29,7 +29,7 @@ const AllTaskPage = async () => {
         let specificClientData: TaskWithProject[] = await db.task.findMany({
           where: {
             clientName: c.name as string,
-            userId: session?.user?.id,
+            userId: session?.user?.id as string,
           },
           include: {
             Project: true, // This includes the related project details
