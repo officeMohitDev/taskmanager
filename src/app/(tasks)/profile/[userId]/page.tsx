@@ -21,35 +21,38 @@ const SingleUserProfilePage = async ({
 }) => {
   const session = await auth();
   const userId = session?.user?.id;
-  const [userData, currentUser, totalTasks, projects, clients] = await Promise.all([
-    db.user.findUnique({
-      where: { id: params.userId },
-      include: {
-        activeProject: true,
-        Task: {
-          take: 5,
-          orderBy: {
-            createdAt: "desc",
+  const [userData, currentUser, totalTasks, projects, clients] =
+    await Promise.all([
+      db.user.findUnique({
+        where: { id: params.userId },
+        include: {
+          activeProject: true,
+          Task: {
+            take: 5,
+            orderBy: {
+              createdAt: "desc",
+            },
+            include: {
+              Project: true,
+            },
           },
-          include: {
-            Project: true,
-          },
+          clients: true,
+          Project: true,
+          assignedProject: true,
         },
-        clients: true,
-        Project: true,
-        assignedProject: true,
-      },
-    }),
-    getCurrentUser(),
-    db.task.count({ where: { userId: params.userId, status: "COMPLETED" } }),
-    db.project.findMany({where: {
-      OR: [
-        { userId: userId },
-        { assignedUsers: { some: { id: userId } } },
-      ],
-    }}),
-    db.client.findMany({where: {userId: userId}})
-  ]);
+      }),
+      getCurrentUser(),
+      db.task.count({ where: { userId: params.userId, status: "COMPLETED" } }),
+      db.project.findMany({
+        where: {
+          OR: [
+            { userId: params.userId },
+            { assignedUsers: { some: { id: params.userId } } },
+          ],
+        },
+      }),
+      db.client.findMany({ where: { userId: params.userId } }),
+    ]);
 
   if (!userData) {
     return <h1>User not found</h1>;
