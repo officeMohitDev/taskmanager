@@ -36,7 +36,7 @@ const SingleProjectPage = async ({
   });
 
   // console.log("client", clientCreated);
-  return project ?  (
+  return project ? (
     <div className="mt-6 flex flex-col gap-8">
       <div className="flex flex-col gap-5">
         <div className="flex gap-3 items-center justify-between">
@@ -156,27 +156,26 @@ const SingleProjectPage = async ({
                 <Link href={`/profile/${project.id}`}>
                   <Image
                     src={project.image || "/images/noprofile.jpg"}
-                    width={150}
-                    height={150}
+                    width={70}
+                    height={70}
                     alt="user profile"
                     className="rounded-full"
                   />
+                  <h3 className="text-center text-[14px]">{project.name}</h3>
                 </Link>
               ))}
             </div>
           </div>
         </div>
       </div>
-      <div>
+      <div className="flex flex-col gap-4">
         <h1>Recent Tasks</h1>
         <TaskTable data={project?.tasks || []} />
       </div>
     </div>
   ) : (
-
     <h1>Project not found</h1>
-  )
-  ;
+  );
 };
 
 export default SingleProjectPage;

@@ -28,30 +28,29 @@ const statuss = [
 const ProjectAddForm = ({ clients }: { clients: Client[] }) => {
   const [clientName, setClientName] = useState("");
   const [clientInput, setClientInput] = useState("");
-  const [status, action] = useFormState(createProject, null);
+  const [status, action] = useFormState(createProject, {
+    success: false,
+    message: "",
+  });
 
-  useEffect(() => {
-    if (!status) {
-      return;
-    }
-    if (status?.success) {
-      toast.success("Successfully created Project");
-    } else {
-      toast.error("Error while creating Project");
-    }
-  }, [status]);
   return (
     <div className="mt-6">
-      <form className="flex flex-col gap-4" action={action}>
+      <form
+        className="flex flex-col gap-4"
+        action={(FormData) => {
+          const res: any = action(FormData);
+          if (!status?.success) return;
+          toast.success(status?.message || "Successfully created Project");
+        }}
+      >
         <h1 className="text-3xl font-bold">Add Project</h1>
-        <div >
+        <div>
           <div className="flex flex-col flex-1">
             <Input label="Project Name" name="name" />
           </div>
-          
         </div>
         <div className="flex gap-5">
-        <div className="flex flex-col flex-1">
+          <div className="flex flex-col flex-1">
             <Input label="Github Link" name="githubLink" />
           </div>
           <div className="flex flex-col flex-1">

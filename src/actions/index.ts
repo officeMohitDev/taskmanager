@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/db/db";
-import { TaskStatus } from "@prisma/client";
+import { Project, TaskStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
@@ -560,4 +560,41 @@ export async function deleteProject(id: string) {
   revalidatePath("/");
   revalidatePath("/tasks");
   redirect("/projects");
+}
+
+
+export async function createClient(formData: FormData) {
+  const result = Object.fromEntries(formData.entries());
+  console.log(result, "result");
+  try {
+    const session = await auth();
+    const userid = session?.user?.id
+    const {name, project} = result;
+    if (!name || !project || name === "" || project === "") {
+      return {success: false, messsage: "Please fill out the form"}
+    
+    }
+
+    const projectDB: Project = await db.project.create({
+      data: {
+        name: project as string,
+        userId: userid as string,
+        assignedUsers: {
+          connect: [{id: userid}]
+        }
+      } 
+    })
+
+    const client = await db.client.create({
+      data: {
+        name: name as string,
+        projectId: projectDB.id as string,
+        userId: userid as string,
+      }
+    }).then(res => {
+      return {success: true, messsage: "Client created successfully"}
+    })
+  } catch (error) {
+    return {success: false, messsage: "Something went wrong"}
+  }
 }

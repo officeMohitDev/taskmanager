@@ -17,15 +17,15 @@ const ClientsPage = async () => {
     <div className="mt-6">
       <div className="justify-between flex items-center">
         <h1 className="text-2xl font-bold">Client List</h1>
-        {/* <Link href={"/projects/create"}>
+        <Link href={"/clients/create"}>
           <Button type="submit" color="secondary">
             {" "}
             <span>
               <PlusIcon />
             </span>
-            Create Project
+            Create Clients
           </Button>
-        </Link> */}
+        </Link>
       </div>
       <div className="grid grid-cols-2 gap-5 mt-4">
         {clients?.map((client, i) => {
@@ -52,9 +52,7 @@ const ClientsPage = async () => {
               )}
               <Divider />
               <CardFooter className="mt-auto">
-                <a target="_blank" href={client?.Project?.githubLink as string}>
-                  Visit source code on GitHub.
-                </a>
+                <Link href={`/copyform/${client.id}`}>Visit Tasks</Link>
               </CardFooter>
             </Card>
           );
